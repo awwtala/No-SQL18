@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model } = require("mongoose");
 
 // Schema to create Student model
 const userSchema = new Schema(
@@ -13,24 +13,37 @@ const userSchema = new Schema(
       type: String,
       required: true,
       max_length: 50,
-      require: 'Email address is required',
-      validate: [validateEmail, 'Please fill a valid email address'], 
-      match: [/^\w+([\.-]?\w+)*@\w+(N.-]?\w+)*(\-\w{2,3})+$/, 'Please fill a valid email address']
+      require: "Email address is required",
+      validate: [validateEmail, "Please fill a valid email address"],
+      match: [
+        /^\w+([\.-]?\w+)*@\w+(N.-]?\w+)*(\-\w{2,3})+$/,
+        "Please fill a valid email address",
+      ],
     },
     thoughts: {
       type: String,
       required: true,
       max_length: 50,
     },
-    assignments: [assignmentSchema],
+    // assignments: [assignmentSchema],
+    friends: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     toJSON: {
-      getters: true,
+      virtuals: true,
     },
+    id: false,
   }
 );
+userSchema.virtual("friendCount").get(function () {
+  return this.friends.length;
+});
 
-const User = model('student', studentSchema);
+const User = model("user", userSchema);
 
-module.exports = Student;
+module.exports = User;

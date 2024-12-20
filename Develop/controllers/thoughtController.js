@@ -1,20 +1,20 @@
-const { Course, Thought } = require('../models');
-
+const { Thought, User } = require('../models');
+//changed course to thought 
 module.exports = {
   // Get all courses
-  async getCourses(req, res) {
+  async getThoughts(req, res) {
     try {
-      const courses = await Course.find()
-      .populate('thoughts');
+      const courses = await Thought.find()
+      .populate('students');
       res.json(courses);
     } catch (err) {
       res.status(500).json(err);
     }
   },
   // Get a course
-  async getSingleCourse(req, res) {
+  async getSingleThought(req, res) {
     try {
-      const course = await Course.findOne({ _id: req.params.courseId })
+      const course = await Thought.findOne({ _id: req.params.courseId })
       .populate('students');
 
       if (!course) {
@@ -27,9 +27,9 @@ module.exports = {
     }
   },
   // Create a course
-  async createCourse(req, res) {
+  async createThought(req, res) {
     try {
-      const course = await Course.create(req.body);
+      const course = await Thought.create(req.body);
       res.json(course);
     } catch (err) {
       console.log(err);
@@ -37,24 +37,24 @@ module.exports = {
     }
   },
   // Delete a course
-  async deleteCourse(req, res) {
+  async deleteThought(req, res) {
     try {
-      const course = await Course.findOneAndDelete({ _id: req.params.courseId });
+      const course = await Thought.findOneAndDelete({ _id: req.params.courseId });
 
       if (!course) {
         return res.status(404).json({ message: 'No course with that ID' });
       }
 
-      await Thought.deleteMany({ _id: { $in: course.students } });
-      res.json({ message: 'Course and students deleted!' });
+      await User.deleteMany({ _id: { $in: course.students } });
+      res.json({ message: 'Thought and students deleted!' });
     } catch (err) {
       res.status(500).json(err);
     }
   },
   // Update a course
-  async updateCourse(req, res) {
+  async updateThought(req, res) {
     try {
-      const course = await Course.findOneAndUpdate(
+      const course = await Thought.findOneAndUpdate(
         { _id: req.params.courseId },
         { $set: req.body },
         { runValidators: true, new: true }
