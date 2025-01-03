@@ -76,44 +76,45 @@ module.exports = {
     }
   },
 
-  // Add an assignment to a user
-  async addAssignment(req, res) {
+  // ADDING A FRIEND
+
+  async addFriend(req, res) {
     try {
-      console.log("You are adding an assignment");
-      console.log(req.body);
       const user = await User.findOneAndUpdate(
         { _id: req.params.userId },
-        { $addToSet: { assignments: req.body } },
+        {
+          $push: {
+            friends: req.params.friendId,
+          },
+        },
         { runValidators: true, new: true }
       );
-
       if (!user) {
-        return res
-          .status(404)
-          .json({ message: "No user found with that ID :(" });
+        return res.status(404).json({ message: "No such user exists" });
       }
-
-      res.json(user);
+      res.json({ message: "User has been updated!" });
     } catch (err) {
       res.status(500).json(err);
     }
   },
-  // Remove assignment from a student
-  async removeAssignment(req, res) {
+
+  // REMOVING A FRIEND
+
+  async removeFriend(req, res) {
     try {
       const user = await User.findOneAndUpdate(
         { _id: req.params.userId },
-        { $pull: { assignment: { assignmentId: req.params.assignmentId } } },
+        {
+          $pull: {
+            friends: req.params.friendId,
+          },
+        },
         { runValidators: true, new: true }
       );
-
       if (!user) {
-        return res
-          .status(404)
-          .json({ message: "No user found with that ID :(" });
+        return res.status(404).json({ message: "No such user exists" });
       }
-
-      res.json(user);
+      res.json({ message: "User has been updated!" });
     } catch (err) {
       res.status(500).json(err);
     }
